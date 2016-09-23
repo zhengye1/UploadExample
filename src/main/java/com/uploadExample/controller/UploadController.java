@@ -45,7 +45,8 @@ public class UploadController {
 		try{
 			if (!file.isEmpty()) {
 				String uploadsDir = "/static/images/";
-				String openshiftProperty = System.getProperty("$OPENSHIFT_DATA_DIR");
+				String openshiftProperty = System.getProperty("OPENSHIFT_DATA_DIR");
+				logger.info("The openshift to Upload is " + openshiftProperty);
 				if (openshiftProperty != null){
 					realPathtoUploads = openshiftProperty + uploadsDir;
 				}
