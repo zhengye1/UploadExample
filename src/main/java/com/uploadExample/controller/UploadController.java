@@ -48,7 +48,7 @@ public class UploadController {
 				String openshiftProperty = System.getenv("OPENSHIFT_DATA_DIR");
 				logger.info("The openshift to Upload is " + openshiftProperty);
 				if (openshiftProperty != null){
-					realPathtoUploads = openshiftProperty.substring(0, openshiftProperty.length())
+					realPathtoUploads = openshiftProperty.substring(0, openshiftProperty.length() - 1)
 							+ uploadsDir;
 				}
 				else{
