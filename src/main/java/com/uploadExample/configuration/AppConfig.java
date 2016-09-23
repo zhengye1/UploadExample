@@ -42,7 +42,7 @@ public class AppConfig extends WebMvcConfigurerAdapter {
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
 		String openshiftRootPath = System.getenv("OPENSHIFT_DATA_DIR");
-		String staticPath = "file:"+openshiftRootPath + File.separator + "static/";
+		String staticPath = "file:"+openshiftRootPath + "static/";
 		logger.info("AppConfig resources on openshift: " + staticPath);
 		registry.addResourceHandler("/static/**").addResourceLocations("/static/", staticPath);
 	}
