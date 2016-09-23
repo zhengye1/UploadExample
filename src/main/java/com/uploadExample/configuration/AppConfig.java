@@ -1,5 +1,7 @@
 package com.uploadExample.configuration;
 
+import java.io.File;
+
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -35,7 +37,9 @@ public class AppConfig extends WebMvcConfigurerAdapter {
 	 */
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-		registry.addResourceHandler("/static/**").addResourceLocations("/static/");
+		String openshiftRootPath = System.getenv("$OPENSHIFT_DIR_DATA");
+		String staticPath = "file:"+openshiftRootPath + File.separator + "/static/";
+		registry.addResourceHandler("/static/**").addResourceLocations("/static/", staticPath);
 	}
 
 	/**

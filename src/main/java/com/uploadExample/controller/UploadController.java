@@ -41,10 +41,17 @@ public class UploadController {
 	@RequestMapping(value="/upload", method = RequestMethod.POST)
 	public String handleUpload(@RequestParam("imageFile") MultipartFile file, 
 			@RequestParam("filename") String filename){
+		String realPathtoUploads;
 		try{
 			if (!file.isEmpty()) {
 				String uploadsDir = "/static/images/";
-				String realPathtoUploads = request.getServletContext().getRealPath(uploadsDir);
+				String openshiftProperty = System.getProperty("$OPENSHIFT_DATA_DIR");
+				if (openshiftProperty != null){
+					realPathtoUploads = openshiftProperty + uploadsDir;
+				}
+				else{
+					realPathtoUploads = request.getServletContext().getRealPath(uploadsDir);
+				}
 				logger.info("The real Path to Upload is " + realPathtoUploads);
 				if(! new File(realPathtoUploads).exists())
 				{
