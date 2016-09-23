@@ -69,6 +69,11 @@ public class UploadController {
 		return "redirect:/display/" + filename;
 	}
 
+	@RequestMapping(value="/display/test1", method = RequestMethod.GET)
+	public String displayDefault(Model model){
+		model.addAttribute("filename", "images");
+		return "display";
+	}
 	@RequestMapping(value="/display/{filename}", method = RequestMethod.GET)
 	public String display(Model model, @PathVariable String filename){
 		model.addAttribute("filename", filename);

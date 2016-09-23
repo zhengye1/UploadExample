@@ -5,7 +5,13 @@
 <title>Upload File Request Page</title>
 </head>
 <body>
-	<img
-		src="<c:url value='/static/images/${filename }.png' />"></img>
+	<c:choose>
+		<c:when test="${filename  == 'images'}">
+			<img src="<c:url value='/static/images/${filename }.jpg' />"></img>
+		</c:when>
+		<c:otherwise>
+			<img src="<c:url value='/static/images/${filename }.png' />"></img>
+		</c:otherwise>
+	</c:choose>
 </body>
 </html>
