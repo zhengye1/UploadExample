@@ -2,6 +2,8 @@ package com.uploadExample.configuration;
 
 import java.io.File;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -20,6 +22,8 @@ import org.springframework.web.servlet.view.JstlView;
 @EnableWebMvc
 @ComponentScan(basePackages = "com.uploadExample")
 public class AppConfig extends WebMvcConfigurerAdapter {
+	
+	static final Logger logger = LoggerFactory.getLogger(AppConfig.class);
 	/**
 	 * Configure ViewResolvers to deliver preferred views.
 	 */
@@ -39,6 +43,7 @@ public class AppConfig extends WebMvcConfigurerAdapter {
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
 		String openshiftRootPath = System.getenv("OPENSHIFT_DIR_DATA");
 		String staticPath = "file:"+openshiftRootPath + File.separator + "static/";
+		logger.info("AppConfig resources on openshift: " + staticPath);
 		registry.addResourceHandler("/static/**").addResourceLocations("/static/", staticPath);
 	}
 
