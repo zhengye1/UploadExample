@@ -40,7 +40,7 @@ public class UploadController {
 	 */
 	@RequestMapping(value="/upload", method = RequestMethod.POST)
 	public String handleUpload(@RequestParam("imageFile") MultipartFile file, 
-			@RequestParam("filename") String filename){
+			@RequestParam("filename") String filename, Model model){
 		String realPathtoUploads;
 		try{
 			if (!file.isEmpty()) {
@@ -57,7 +57,10 @@ public class UploadController {
 				logger.info("The real Path to Upload is " + realPathtoUploads);
 				if(! new File(realPathtoUploads).exists())
 				{
-					new File(realPathtoUploads).mkdir();
+					if ( !new File(realPathtoUploads).mkdir()){
+						logger.error("create folder failed");
+						throw new Exception("Create folder failed");
+					}
 				}
 				BufferedImage bufferedImage =
 						Thumbnails.of(file.getInputStream())
@@ -69,7 +72,6 @@ public class UploadController {
 				ImageIO.write(bufferedImage, "png", imageDestination);
 			} 
 			else{
-
 				return "redirect:/upload?success=false";
 			}
 		}catch(Exception e){
