@@ -132,7 +132,7 @@
 						<version>2.4</version>
 						<configuration>
 							<outputDirectory>webapps</outputDirectory>
-							<warName>ROOT</warName>
+							<warName>UploadExample</warName>
 						</configuration>
 					</plugin>
 
