@@ -68,7 +68,7 @@
 					<img src= "<c:url value='/static/images/default_user.png' />" />
 				</c:when>
 				<c:otherwise>
-					User.hasProfileImage didn't pass + ${user.hasProfileImage }
+					<img src= "<c:url value='/static/images/${user.username }.png' />" />
 				</c:otherwise>
 			</c:choose>
 			<%@include file="upload.jsp"%></div>

@@ -2,6 +2,7 @@ package com.uploadExample.controller;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.nio.file.Files;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
@@ -35,20 +36,20 @@ public class UploadController {
 
 	@Autowired
 	UserService userService;
-	
+
 	@RequestMapping(value="/list", method = RequestMethod.GET)
-    public String list(Model model){
+	public String list(Model model){
 		model.addAttribute("users", userService.findAll());
 		return "list";
 	}
-	
+
 	@RequestMapping(value="/user/{username}/edit", method = RequestMethod.GET)
 	public String displayEditPage(Model model, @PathVariable("username") String username){
 		AppUser user = userService.findByUsername(username);
 		model.addAttribute("user", user);
 		return "editUser";
 	}
-	
+
 	@RequestMapping(value="/user/{username}/edit", method = RequestMethod.POST)
 	public String editUser(@Valid AppUser appUser, BindingResult result, Model model, 
 			@PathVariable("username") String username, RedirectAttributes redirectAttributes){
@@ -59,7 +60,7 @@ public class UploadController {
 		redirectAttributes.addFlashAttribute("user", appUser);
 		return "redirect:/user/" + appUser.getUsername() + "/edit";
 	}
-	
+
 	@RequestMapping(value="/upload", method = RequestMethod.GET)
 	public String uploadPage(Model model){
 		return "upload";
@@ -71,11 +72,12 @@ public class UploadController {
 	 * @param filename
 	 * @return the view of page
 	 */
-	@RequestMapping(value="upload", method = RequestMethod.POST)
+	@RequestMapping(value="/user/{username}/upload", method = RequestMethod.POST, params = {"upload"})
 	public String handleUpload(@RequestParam("imageFile") MultipartFile file, 
 			@RequestParam("filename") String filename, Model model, 
-			RedirectAttributes redirectAttributes){
+			RedirectAttributes redirectAttributes, @PathVariable String username){
 		String realPathtoUploads;
+		AppUser appUser = userService.findByUsername(username);
 		try{
 			if (!file.isEmpty()) {
 				String uploadsDir = "/static/images/";
@@ -104,18 +106,57 @@ public class UploadController {
 						.asBufferedImage();
 				File imageDestination = new File(realPathtoUploads + filename + ".png");
 				ImageIO.write(bufferedImage, "png", imageDestination);
+				userService.updateHasProfileImage(appUser.getId(), 1);
 			} 
 			else{
 				redirectAttributes.addFlashAttribute("errorMsg", "File is Empty");
-				return "redirect:/upload?success=false";
+				return "redirect:/user/" + appUser.getUsername() + "/edit?success=false";
 			}
 		}catch(Exception e){
 			redirectAttributes.addFlashAttribute("errorMsg", e.getMessage());
-			return "redirect:/upload?success=false";
+			return "redirect:/user/" + appUser.getUsername() + "/edit?success=false";
 		}
-		return "redirect:/display/" + filename;
+		return "redirect:/user/" + appUser.getUsername() + "/edit";
 	}
 
+
+	@RequestMapping(value="/user/{username}/upload", method = RequestMethod.POST, params = {"remove"})
+	public String removeProfileImage(@PathVariable("username")String username, Model model, 
+			RedirectAttributes redirectAttributes){
+		AppUser appUser = userService.findByUsername(username);
+		String realPathtoUploads;
+		if (appUser.getHasProfileImage().intValue() == 1){
+			String uploadsDir = "/static/images/";
+			String openshiftProperty = System.getenv("OPENSHIFT_DATA_DIR");
+			logger.info("The openshift to Upload is " + openshiftProperty);
+			if (openshiftProperty != null){
+				realPathtoUploads = openshiftProperty.substring(0, openshiftProperty.length() - 1)
+						+ uploadsDir;
+			}
+			else{
+				realPathtoUploads = request.getServletContext().getRealPath(uploadsDir);
+			}
+			File file = new File(realPathtoUploads + appUser.getUsername()+ ".png");
+			try{
+				boolean result = Files.deleteIfExists(file.toPath());
+				if (result){
+					userService.updateHasProfileImage(appUser.getId(), 0);
+				}
+				else{
+					throw new Exception("File delete file");
+				}
+			}
+			catch(Exception e){
+				redirectAttributes.addFlashAttribute("errorMsg", e.getMessage());
+				return "redirect:/user/" + appUser.getUsername() + "/edit?success=false";
+			}
+			return "redirect:/user/" + appUser.getUsername() + "/edit";
+		}
+		else{
+			redirectAttributes.addFlashAttribute("errorMsg", "The user doesn't have profile image");
+			return "redirect:/user/" + appUser.getUsername() + "/edit?success=false";
+		}
+	}
 	@RequestMapping(value="/display/test1", method = RequestMethod.GET)
 	public String displayDefault(Model model){
 		model.addAttribute("filename", "images");

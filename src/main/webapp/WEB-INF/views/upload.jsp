@@ -17,8 +17,9 @@
 			</div>
 		</c:if>
 		<label>File to upload: </label> <input type="file" name="imageFile" />
-		<br> <label>Filename:</label> <input type="text" name="filename"><br>
-		<input type="submit" value="Upload" />
+		<input type="hidden" name="filename" value="${user.username }"><br>
+		<input type="submit" name="upload" value="Upload" />
+		<input type="submit" name="remove" value="Remove" />
 	</form>
 </body>
 </html>
